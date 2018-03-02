@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>码上易行</title>
+  <link href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css" rel="stylesheet">
+  <style>
+    html {
+      background-color: #f8f8f8;
+      height: 100%;
+    }
+
+    body {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wrap {
+      flex: 1;
+    }
+
+    .title {
+      text-align: center;
+      margin: 20px auto;
+    }
+
+    .button {
+      margin: 20px auto;
+      width: 90%;
+    }
+
+    ul {
+      list-style-type: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap" id="app">
+    <div class="title">
+      <h2>码上易行微信小程序管理系统</h2>
+    </div>
+    <div class="form">
+      <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+            <label class="weui-label">微信号</label>
+          </div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" type="text" placeholder="请输入微信号" v-model="wechatId" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="button weui-btn weui-btn_primary" @click="submit">确认</div>
+    <div class="button weui-btn weui-btn_plain-default" @click="show">显示二维码</div>
+  </div>
+  <div class="question">
+    <div class="weui-panel weui-panel_access">
+      <div class="weui-panel__hd">常见问题</div>
+      <div class="weui-panel__bd">
+        <div class="weui-media-box weui-media-box_text">
+          <h4 class="weui-media-box__title">1. 未找到用户，或者用户没有打开通过微信号搜索</h4>
+          <p class="weui-media-box__desc">
+            请确认微信号是否正确
+            <br> 请跟用户确认是否打开“通过微信号添加我的方式”
+          </p>
+        </div>
+        <div class="weui-media-box weui-media-box_text">
+          <h4 class="weui-media-box__title">2. 用户已经绑定</h4>
+          <p class="weui-media-box__desc">改用户已经绑定为开发者或者体验者了，无需重复绑定，可以直接扫码体验小程序</p>
+        </div>
+        <div class="weui-media-box weui-media-box_text">
+          <h4 class="weui-media-box__title">3. 如何打开“通过微信号添加我的方式”</h4>
+          <p class="weui-media-box__desc">打开方式如下：微信tab栏“我”--设置--隐私--添加我的方式--可通过以下方式搜索到我--微信号</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+  <script src="https://unpkg.com/sweetalert2@7.13.1/dist/sweetalert2.all.js"></script>
+  <script>
+    let app = new Vue({
+      el: "#app",
+      data: {
+        wechatId: '',
+        error: ''
+      },
+      methods: {
+        show() {
+          swal({
+            imageUrl: '/qrcode.png',
+            imageHeight: 300,
+            imageAlt: '小程序二维码'
+          })
+        },
+        submit() {
+          if (this.wechatId == '' || this.wechatId == undefined) {
+            swal(
+              '参数错误',
+              '请输入微信号',
+              'error'
+            )
+            return
+          }
+          axios({
+            method: 'post',
+            url: '/submit',
+            data: {
+              wechat_id: this.wechatId
+            },
+
+          }).then((res) => {
+            console.log(res)
+            if (res.data.code == 0) {
+              swal(
+                res.data.message,
+                res.data.desc,
+                'success'
+              )
+            } else {
+              swal(
+                res.data.message,
+                res.data.desc,
+                'error'
+              )
+            }
+          })
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
