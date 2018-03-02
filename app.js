@@ -47,13 +47,14 @@ router.post('/submit', async (ctx, next) => {
         id: 10401,
         wechatid: postData.wechat_id
     }
-    await fly.request(url, data, {
-        method: 'POST',
-        headers: {
-            token: '201:61646D696E:1:1523092989776:C45897ED77CF4FC7354A297147C8219E'
-        }
-    }).then((res) => {
-        let result
+    let result = {}
+    try {
+        let res = await fly.request(url, data, {
+            method: 'POST',
+            headers: {
+                token: '61646D696E:1:1523092989776:C45897ED77CF4FC7354A297147C8219'
+            }
+        })
         console.log(res.data)
         if (res.data.errcode == 0) {
             result = {
@@ -68,18 +69,50 @@ router.post('/submit', async (ctx, next) => {
                 desc: errorMsg[res.data.errcode]
             }
         }
-        ctx.response.body = JSON.stringify(result)
-
-    }).catch(err => {
+    } catch (err) {
         console.log(err.status)
         console.log(err.message)
-        let result = {
+        result = {
             code: err.status,
             message: '系统错误',
             desc: `错误码:${err.status},错误描述：${err.message}, 请联系管理员`
         }
-        ctx.response.body = JSON.stringify(result);
-    })
+    }
+    ctx.response.body = JSON.stringify(result)
+
+    // await fly.request(url, data, {
+    //     method: 'POST',
+    //     headers: {
+    //         token: '201:61646D696E:1:1523092989776:C45897ED77CF4FC7354A297147C8219E'
+    //     }
+    // }).then((res) => {
+    //     let result
+    //     console.log(res.data)
+    //     if (res.data.errcode == 0) {
+    //         result = {
+    //             code: 0,
+    //             message: '添加成功',
+    //             desc: '请通知用户在二十四小时内同意邀请绑定'
+    //         }
+    //     } else {
+    //         result = {
+    //             code: res.data.errcode,
+    //             message: '添加错误',
+    //             desc: errorMsg[res.data.errcode]
+    //         }
+    //     }
+    //     ctx.response.body = JSON.stringify(result)
+
+    // }).catch(err => {
+    //     console.log(err.status)
+    //     console.log(err.message)
+    //     let result = {
+    //         code: err.status,
+    //         message: '系统错误',
+    //         desc: `错误码:${err.status},错误描述：${err.message}, 请联系管理员`
+    //     }
+    //     ctx.response.body = JSON.stringify(result);
+    // })
     await next()
 })
 
